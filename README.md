@@ -1,2 +1,1 @@
-# trabalho-crossfit
-ok
+print("mexi")
