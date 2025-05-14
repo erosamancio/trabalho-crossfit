@@ -161,4 +161,85 @@ def apagar():
     else:
         print("não achei esse WOD")
 
+def filtrar():
+    print("\n--- Filtrar WODs ---")
+    print("1) Por tipo")
+    print("2) Por movimento")
+    esc = input("Selecione uma opção: ")
+
+    try:
+        f = open("wods.txt", "r")
+        dados = f.readlines()
+        f.close()
+    except:
+        print("Falha na tentativa de abrir o arquivo")
+        return
+
+    if dados == []:
+        print("Nenhum WOD cadastrado")
+        return
+
+    filtro = input("Digite o que deseja buscar: ").upper()
+    encontrou = False
+
+    for l in dados:
+        c = l.strip().split(";")
+        if esc == "1" and filtro in c[1].upper():
+            encontrou = True
+        elif esc == "2" and filtro in c[4].upper():
+            encontrou = True
+        else:
+            continue
+
+        if encontrou:
+            print("\nData:", c[0])
+            print("Tipo:", c[1])
+            print("Séries:", c[2])
+            print("Repetições:", c[3])
+            print("Movimentos:", c[4])
+            print("------------------")
+            encontrou = False  # reseta pra poder verificar o próximo
+
+    if not encontrou:
+        print("Nenhum resultado foi encontrado com esse filtro.")
+
+import os
+
+def checar_arquivo():
+    if not os.path.exists("wods.txt"):
+        with open("wods.txt", "w") as f:
+            pass  # só cria o arquivo vazio
+    
+def menu():
+    checar_arquivo()  # garante que o arquivo existe antes de tudo
+    while True:
+        print("\n~~ MENU DE WODs CROSSFIT ~~")
+        print("1) Adicionar WOD")
+        print("2) Visualizar WODs")
+        print("3) Editar WOD")
+        print("4) Excluir WOD")
+        print("5) Filtrar WODs")
+        print("0) Sair\n")
+
+        try:
+            opcao = int(input("Digite um numero: "))
+        except:
+            print("Digite apenas números!")
+            continue
+
+        if opcao == 1:
+            add()
+        elif opcao == 2:
+            ver()
+        elif opcao == 3:
+            edit()
+        elif opcao == 4:
+            apagar()
+        elif opcao == 5:
+            filtrar()
+        elif opcao == 0:
+            print("Programa encerrado!")
+            break
+        else:
+            print("Opção inválida")
 menu()
