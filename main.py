@@ -1,22 +1,24 @@
 import os
 
 def menu():
-    checar_arquivo()  # garante que o arquivo existe antes de tudo
+    checar_arquivo()  # garante que o arquivo de WODs existe
+    checar_arquivo_metas()  # garante que o arquivo de metas existe
     while True:
-        print("\n~~ MENU DE WODs CROSSFIT ~~")
+        print("\n~~~ MENU DE WODs CROSSFIT ~~~")
         print("1) Adicionar WOD")
         print("2) Visualizar WODs")
         print("3) Editar WOD")
         print("4) Excluir WOD")
         print("5) Filtrar WODs")
+        print("6) Adicionar Meta")
+        print("7) Ver Metas")
+        print("8) Editar Meta")
         print("0) Sair\n")
-
         try:
             opcao = int(input("Digite um número: "))
         except:
             print("Digite apenas números!")
             continue
-
         if opcao == 1:
             add()
         elif opcao == 2:
@@ -27,6 +29,12 @@ def menu():
             apagar()
         elif opcao == 5:
             filtrar()
+        elif opcao == 6:
+            add_meta()
+        elif opcao == 7:
+            ver_metas()
+        elif opcao == 8:
+            edit_meta()
         elif opcao == 0:
             print("Programa encerrado!")
             break
@@ -45,13 +53,15 @@ def add():
     s = input("Séries: ")
     r = input("Repetições: ")
     m = input("Movimentos (vírgula): ")
+    tempo = input("Tempo: ")
 
     try:
         with open("wods.txt", "a") as f:
-            f.write(d + ";" + t + ";" + s + ";" + r + ";" + m + "\n")
+            f.write(d + ";" + t + ";" + s + ";" + r + ";" + m + ";" + tempo + "\n")
         print("Salvo!\n")
     except:
         print("Erro ao salvar.")
+
 
 def ver():
     print("\n-- WODs --")
@@ -202,5 +212,115 @@ def filtrar():
 
     if not encontrou_algum:
         print("Nenhum resultado foi encontrado com esse filtro.")
+def checar_arquivo_metas():
+    if not os.path.exists("metas.txt"):
+        with open("metas.txt", "w"):
+            pass  # só cria o arquivo vazio
+def add_meta():
+    checar_arquivo_metas()
+    print("\n--- Nova Meta ---")
+    d = input("Data (meta): ")
+    objetivo = input("Objetivo: ")
+    prazo = input("Prazo: ")
+    progresso = input("Progresso atual (0-100%): ")
+
+    try:
+        progresso = int(progresso)
+        if progresso >= 100:
+            print("Meta já está concluída e não será salva.")
+            return
+    except ValueError:
+        print("Progresso deve ser um número.")
+        return
+
+    try:
+        with open("metas.txt", "a") as f:
+            f.write(f"{d};{objetivo};{prazo};{progresso}\n")
+        print("Meta salva!\n")
+    except:
+        print("Erro ao salvar a meta")
+
+def ver_metas():
+    checar_arquivo_metas()
+    print("\n-- METAS --")
+    try:
+        with open("metas.txt") as f:
+            linhas = f.readlines()
+    except:
+        print("Erro abrindo o arquivo de metas")
+        return
+
+    if not linhas:
+        print("Nenhuma meta cadastrada")
+        return
+
+    for l in linhas:
+        partes = l.strip().split(";")
+        if len(partes) < 4:
+            continue
+        print(f"Data: {partes[0]}")
+        print(f"Objetivo: {partes[1]}")
+        print(f"Prazo: {partes[2]}")
+        print(f"Progresso: {partes[3]}%")
+        print("------------------")
+
+def edit_meta():
+    checar_arquivo_metas()
+    print("\n--- Editar Meta ---")
+    try:
+        with open("metas.txt", "r") as f:
+            todas = f.readlines()
+    except:
+        print("Erro ao abrir o arquivo")
+        return
+
+    if not todas:
+        print("Nenhuma meta para editar")
+        return
+
+    ver_metas()
+    data_alvo = input("Data da meta que quer editar: ")
+    novo = ""
+    achei = False
+
+    for l in todas:
+        c = l.strip().split(";")
+        if c[0] == data_alvo:
+            achei = True
+            print("1) Objetivo\n2) Prazo\n3) Progresso")
+            escolha = input("Qual campo deseja editar: ")
+
+            if escolha == "1":
+                c[1] = input("Novo objetivo: ")
+            elif escolha == "2":
+                c[2] = input("Novo prazo: ")
+            elif escolha == "3":
+                try:
+                    novo_prog = int(input("Novo progresso (0-100%): "))
+                    if novo_prog >= 100:
+                        print("Meta concluída! Ela será removida.")
+                        continue  # não inclui no novo arquivo
+                    c[3] = str(novo_prog)
+                except ValueError:
+                    print("Progresso inválido.")
+                    return
+            else:
+                print("Opção inválida")
+                return
+
+            nova_linha = ";".join(c) + "\n"
+            novo += nova_linha
+        else:
+            novo += l
+
+    try:
+        with open("metas.txt", "w") as f:
+            f.write(novo)
+        print("Meta editada com sucesso")
+    except:
+        print("Erro ao salvar a meta editada")
+
+    if not achei:
+        print("Nenhuma meta encontrada com essa data")
 
 menu()
