@@ -1,61 +1,40 @@
-def menu():
-    while True:
-        print("\n~~~ MENU DE WODs CROSSFIT ~~~")
-        print("1) Adicionar WOD")
-        print("2) Visualizar WODs")
-        print("3) Editar WOD")
-        print("4) Excluir WOD")
-        print("0) Sair\n")
+import os
 
-        opcao = int(input("Digite um numero: "))
-
-        if opcao == "1":
-            add()
-        elif opcao == "2":
-            ver()
-        elif opcao == "3":
-            edit()
-        elif opcao == "4":
-            apagar()
-        elif opcao == "0":
-            print("programa encerrado")
-            break
-        else:
-            print("opção inválida")
+def checar_arquivo():
+    if not os.path.exists("wods.txt"):
+        with open("wods.txt", "w") as f:
+            pass  # só cria o arquivo vazio
 
 def add():
     print("\n--- Novo WOD ---")
-    # pegando os dados do usuário
     d = input("Data: ")
-    t = input("Tipo: ").upper()  # deixar maiúsculo pra ficar mais padronizado
+    t = input("Tipo: ").upper()
     s = input("Séries: ")
     r = input("Repetições: ")
-    m = input("Movimentos (virgula): ")
+    m = input("Movimentos (vírgula): ")
 
     try:
-        f = open("wods.txt", "a")  # abre o arquivo no modo adicionar
-        f.write(d + ";" + t + ";" + s + ";" + r + ";" + m + "\n")  # escrevendo tudo numa linha só
-        f.close()
+        with open("wods.txt", "a") as f:
+            f.write(f"{d};{t};{s};{r};{m}\n")
         print("Salvo!\n")
     except:
-        print("deu erro pra salvar")  # caso der algum erro na hora de salvar
+        print("Erro ao salvar")
+
 def ver():
     print("\n-- WODs --")
     try:
-        f = open("wods.txt")  # só abre o arquivo pra ler
-        dados = f.readlines()  # le todas as linhas
-        f.close()
+        with open("wods.txt") as f:
+            dados = f.readlines()
     except:
-        print("erro abrindo o arquivo")
+        print("Erro ao abrir o arquivo")
         return
 
-    if dados == []:
-        print("não tem nada ainda")  # se o arquivo estiver vazio
+    if not dados:
+        print("Não tem nada ainda")
         return
 
     for l in dados:
-        # separando as infos pelo ;
-        campos = l.split(";")
+        campos = l.strip().split(";")
         print("Data:", campos[0])
         print("Tipo:", campos[1])
         print("Séries:", campos[2])
@@ -66,31 +45,29 @@ def ver():
 def edit():
     print("\n--- Editar WOD ---")
     try:
-        arq = open("wods.txt", "r")
-        todos = arq.readlines()
-        arq.close()
+        with open("wods.txt", "r") as arq:
+            todos = arq.readlines()
     except:
-        print("erro abrindo o arquivo")
+        print("Erro abrindo o arquivo")
         return
 
-    if len(todos) == 0:
-        print("nada para editar")  # se não tiver nenhum wod
+    if not todos:
+        print("Nada para editar")
         return
 
-    ver()  # mostra os wods primeiro
+    ver()
     alvo = input("Data do WOD que quer mudar: ")
 
     novo = ""
     achei = False
 
     for l in todos:
-        c = l.split(";")
+        c = l.strip().split(";")
         if c[0] == alvo:
             achei = True
             print("1) Tipo\n2) Séries\n3) Repetições\n4) Movimentos")
             esc = input("Qual quer mudar: ")
 
-            # muda só o que a pessoa quiser
             if esc == "1":
                 c[1] = input("Novo tipo: ").upper()
             elif esc == "2":
@@ -98,41 +75,38 @@ def edit():
             elif esc == "3":
                 c[3] = input("Nova repetição: ")
             elif esc == "4":
-                c[4] = input("Novos movimentos: ") + "\n"
+                c[4] = input("Novos movimentos:")
             else:
-                print("número errado")
+                print("Número inválido")
                 return
 
-            linha_nova = c[0] + ";" + c[1] + ";" + c[2] + ";" + c[3] + ";" + c[4]
-            novo += linha_nova
+            novo += ";".join(c) + "\n"
         else:
-            novo += l  # mantém os outros como estavam
+            novo += l
 
     try:
-        a = open("wods.txt", "w")
-        a.write(novo)  # sobrescreve tudo com as mudanças
-        a.close()
+        with open("wods.txt", "w") as a:
+            a.write(novo)
     except:
-        print("erro ao escrever")
+        print("Erro ao escrever")
         return
 
     if achei:
-        print("editado com sucesso")
+        print("Editado com sucesso")
     else:
-        print("nada encontrado com essa data")
+        print("Nada encontrado com essa data")
 
 def apagar():
     print("\n--- Apagar WOD ---")
     try:
-        f = open("wods.txt", "r")
-        linhas = f.readlines()
-        f.close()
+        with open("wods.txt", "r") as f:
+            linhas = f.readlines()
     except:
-        print("erro no arquivo")
+        print("Erro no arquivo")
         return
 
-    if linhas == []:
-        print("não tem nada pra apagar")
+    if not linhas:
+        print("Não tem nada pra apagar")
         return
 
     ver()
@@ -142,24 +116,23 @@ def apagar():
     achou = False
 
     for l in linhas:
-        pedacos = l.split(";")
+        pedacos = l.strip().split(";")
         if pedacos[0] != data:
             novo += l
         else:
-            achou = True  # achou o wod que quer apagar
+            achou = True
 
     try:
-        f = open("wods.txt", "w")
-        f.write(novo)
-        f.close()
+        with open("wods.txt", "w") as f:
+            f.write(novo)
     except:
-        print("erro ao salvar novo arquivo")
+        print("Erro ao salvar novo arquivo")
         return
 
     if achou:
-        print("apagado com sucesso")
+        print("Apagado com sucesso")
     else:
-        print("não achei esse WOD")
+        print("Não achei esse WOD")
 
 def filtrar():
     print("\n--- Filtrar WODs ---")
@@ -168,14 +141,13 @@ def filtrar():
     esc = input("Selecione uma opção: ")
 
     try:
-        f = open("wods.txt", "r")
-        dados = f.readlines()
-        f.close()
+        with open("wods.txt", "r") as f:
+            dados = f.readlines()
     except:
         print("Falha na tentativa de abrir o arquivo")
         return
 
-    if dados == []:
+    if not dados:
         print("Nenhum WOD cadastrado")
         return
 
@@ -198,20 +170,13 @@ def filtrar():
             print("Repetições:", c[3])
             print("Movimentos:", c[4])
             print("------------------")
-            encontrou = False  # reseta pra poder verificar o próximo
+            encontrou = False
 
     if not encontrou:
         print("Nenhum resultado foi encontrado com esse filtro.")
 
-import os
-
-def checar_arquivo():
-    if not os.path.exists("wods.txt"):
-        with open("wods.txt", "w") as f:
-            pass  # só cria o arquivo vazio
-    
 def menu():
-    checar_arquivo()  # garante que o arquivo existe antes de tudo
+    checar_arquivo()
     while True:
         print("\n~~ MENU DE WODs CROSSFIT ~~")
         print("1) Adicionar WOD")
@@ -222,7 +187,7 @@ def menu():
         print("0) Sair\n")
 
         try:
-            opcao = int(input("Digite um numero: "))
+            opcao = int(input("Digite um número: "))
         except:
             print("Digite apenas números!")
             continue
@@ -242,4 +207,5 @@ def menu():
             break
         else:
             print("Opção inválida")
+
 menu()
