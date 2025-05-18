@@ -1,4 +1,5 @@
 import os
+os.system("cls")
 
 def menu():
     checar_arquivo()  # garante que o arquivo de WODs existe
@@ -13,6 +14,8 @@ def menu():
         print("6) Adicionar Meta")
         print("7) Ver Metas")
         print("8) Editar Meta")
+        print("9) Sugestão Aleatória de WOD")
+        print("10) Conquistas")
         print("0) Sair\n")
         try:
             opcao = int(input("Digite um número: "))
@@ -35,6 +38,10 @@ def menu():
             ver_metas()
         elif opcao == 8:
             edit_meta()
+        elif opcao == 9:
+            sugerir_wod()
+        elif opcao == 10:
+            conquistas()
         elif opcao == 0:
             print("Programa encerrado!")
             break
@@ -322,5 +329,81 @@ def edit_meta():
 
     if not achei:
         print("Nenhuma meta encontrada com essa data")
+import random
 
+def sugerir_wod():
+    print("\n--- Sugestão Aleatória de WOD ---")
+    try:
+        f = open("wods.txt", "r")
+        linhas = f.readlines()
+        f.close()
+    except:
+        print("Erro ao abrir o arquivo")
+        return
+
+    if not linhas:
+        print("Nenhum WOD cadastrado ainda.")
+        return
+
+    escolhido = random.choice(linhas).strip().split(";")
+    print("Aqui vai um WOD aleatório pra você tentar repetir ou se inspirar:\n")
+    print("Data:", escolhido[0])
+    print("Tipo:", escolhido[1])
+    print("Séries:", escolhido[2])
+    print("Repetições:", escolhido[3])
+    print("Movimentos:", escolhido[4])
+
+def conquistas():
+    print("\n--- Conquistas ---")
+    try:
+        f = open("wods.txt", "r")
+        linhas = f.readlines()
+        f.close()
+    except:
+        print("Erro ao acessar os WODs")
+        return
+
+    if not linhas:
+        print("Nenhum WOD cadastrado ainda.")
+        return
+
+    total_wods = len(linhas)
+    tipos = set()
+    movimentos = []
+    contagem_movimentos = {}
+
+    for l in linhas:
+        c = l.strip().split(";")
+        tipos.add(c[1].strip().upper())
+        for m in c[4].split(","):
+            mov = m.strip().upper()
+            movimentos.append(mov)
+            if mov in contagem_movimentos:
+                contagem_movimentos[mov] += 1
+            else:
+                contagem_movimentos[mov] = 1
+
+    print(f"\nVocê já cadastrou {total_wods} WOD(s)")
+
+    if total_wods >= 1:
+        print("✅ Primeiro treino registrado!")
+    if total_wods >= 10:
+        print("🏅 Medalha de Consistência: 10 ou mais WODs registrados!")
+    if total_wods >= 20:
+        print("🏅🏅 Medalha de Foco: 20 ou mais WODs registrados!")
+
+    if len(tipos) >= 3:
+        print("🧠 Usou todos os tipos de treino! (AMRAP, EMOM e FOR TIME)")
+    elif len(tipos) >= 2:
+        print("🤸‍♂ Medalha de Versatilidade: 2 ou mais tipos diferentes!")
+
+    if len(set(movimentos)) >= 10:
+        print("🤸‍♀🤸‍♀ Medalha de Diversidade: 10 ou mais movimentos diferentes usados!")
+
+    favorito = max(contagem_movimentos, key=contagem_movimentos.get)
+    qtd = contagem_movimentos[favorito]
+    if qtd >= 5:
+        print(f"⭐ Movimento favorito: {favorito} apareceu {qtd} vezes!")
+
+    print("\nContinue se desafiando para conquistar mais medalhas 💪")
 menu()
