@@ -63,7 +63,7 @@ Para facilitar a análise de desempenho:
 
  º “Baixar o tempo no treino Fran para menos de 6 minutos”
 
-•O sistema acompanha seu progresso automaticamente e exibe quando você estiver próximo de atingir suas metas.
+•O sistema permite que você edite suas metas, podendo alterar manualmente a porcentagem de conclusão por meio do seu progresso.
 
 
 5. Sugestões de WODs Aleatórios
@@ -71,6 +71,8 @@ Para facilitar a análise de desempenho:
 •Para garantir variedade nos treinos:
 
  º A aplicação analisa seu histórico e sugere WODs aleatórios personalizados, com base nos   movimentos e tipos de treino mais frequentes.
+
+ º Também é possível receber recomendação de WODs aleatórios já definidos, caso o usuário opte em usá-los pode cadastrar na lista de WODs.
 
  º Ótima opção para dias sem programação fixa.
 
